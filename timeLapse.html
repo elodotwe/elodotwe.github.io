@@ -1,0 +1,34 @@
+<html>
+<head><title>Converting a set of pictures into a video in Debian</title></head>
+<body>
+<h1>Converting a set of pictures into a video in Debian</h1>
+<h3>(potentially as a part of time-lapse photography, as was the case here)</h3>
+<p><i>Updated 2014-05-17</i></p>
+<p>On one of my trips to the upper peninsula of Michigan, I set up my Canon PowerShot SX100IS with CHDK's built-in intervalometer script, giving me a picture every 30 seconds of a 9-hour trip. This is the method I used on my Debian box to convert that series of images to a video.</p>
+<p>One of the challenges was that the pictures ended up in two folders for some reason. My camera followed the all-too-familiar 121CANON/IMG_xxxx.JPG naming scheme, but somewhere in the middle, it wrote to 122CANON/IMG_xxxx.JPG as well. This is a problem because the tool I'll be using to convert to video expects the files to have sequential numbering; this is how it will determine the order. The files in this 122CANON folder are sequenced entirely differently. Happily, the camera's real-time clock battery was good, and each file was given a valid modification time...this is what I'll use to re-order the images into one sequence.</p>
+<p>So I hacked together a Python (v2, not v3, just because) script to first rename each file from IMG_xxxx to simply its number of seconds since epoch. It looks like this:</p>
+<pre>import os.path, time, datetime
+import shutil
+import glob
+os.chdir("/path/to/timelapse/122CANON")
+for file in glob.glob("./*.JPG"):
+    nicename = repr(os.path.getmtime(file))
+    shutil.copyfile(file,"/path/to/timelapse/renamed/"+nicename+".jpg")</pre>
+<p>I changed the path on that 4th line and reran the script for each folder. I could then sort by name and get them chronologically ordered in the renamed folder. (Amusingly enough, there was a ".0" in the filename of everything because the time-since-epoch is stored as a float and I couldn't be bothered to look up which formatting command rounds to nearest whole number.) Now to give them sequential numbers.</p>
+<pre>import os.path, time, datetime
+import shutil
+import glob
+os.chdir("/path/to/timelapse/renamed")
+sortedNames = sorted(glob.glob("./*.jpg"))
+idx = 0
+for file in sortedNames:
+    nicename = "%04d" % idx
+    idx += 1
+    shutil.move(file,nicename+".jpg")</pre>
+<p>Now we have a folder with nice sequential names. Time to run the video converter.</p>
+<pre>avconv -r 30 -i %04d.jpg -s hd480 -vcodec libx264 time-lapse.mp4</pre>
+<p>After several minutes of churning, I got what I came here for--a 1-minute video file, where each frame was an image from the time lapse I took. The -r value is frames per second, so slowing that down would make the video longer and make each image display for a longer time. The %04d.jpg is how we get the indexed images into the converter. The other options I just copy-pasted from <a href="http://askubuntu.com/questions/50339/how-to-make-a-stop-motion-or-time-lapse-video-with-webcam">here</a> (apparently ffmpeg is now called avconv. Huh). I'm sure there's infinite tweakability here, but I don't care to look into it.</p>
+<p>If you have questions/comments, contact me via jarau at mtu dot educational TLD.</p>
+<a href=".">Back to my homepage</a>
+</body>
+</html>
