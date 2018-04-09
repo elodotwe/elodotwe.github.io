@@ -1,0 +1,200 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Conway's Game of Life</title>
+    <style>
+        #cellcontainer {
+            border: 1px black;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+
+        #cellcontainer td {
+            padding: 0;
+            min-width: 20px;
+            height: 20px;
+        }
+
+        .set {
+            background: black;
+        }
+
+        .unset {
+            background: white;
+        }
+    </style>
+</head>
+
+<body onload="onDimensionsChanged()">
+    <h1>Conway's Game of Life</h1>
+    <h2>A naïve HTML+JS implementation</h2>
+    <p>
+        <a href="">Conway's Game of Life</a> has 4 simple rules:</a>
+    </p>
+    <p>
+        <ol>
+            <li>Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.</li>
+            <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+            <li>Any live cell with more than three live neighbours dies, as if by overpopulation.</li>
+            <li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>
+        </ol>
+    </p>
+
+    <p>Width:
+        <input type="number" id="width" onchange="onDimensionsChanged()" value="10" />
+    </p>
+    <p>Height:
+        <input type="number" id="height" onchange="onDimensionsChanged()" value="10" />
+    </p>
+    <p><button type="button" onclick="onStartStopClicked()" id="startstop">Start</button> <span id="generationCount">Generation 0</span></p>
+
+    <table id="cellcontainer" border="1px"></table>
+
+    <script>
+        var isRunning = false
+        let cellContainer = document.getElementById("cellcontainer")
+        var generation = 0
+        let txtWidth = document.getElementById("width")
+        let txtHeight = document.getElementById("height")
+        let btnStartStop = document.getElementById("startstop")
+
+        var width = 0
+        var height = 0
+
+        function onStartStopClicked() {
+            isRunning = !isRunning
+            
+            btnStartStop.textContent = isRunning ? "Stop" : "Start"
+
+            txtWidth.disabled = isRunning
+            txtHeight.disabled = isRunning
+
+            if (isRunning) {
+                doGeneration()
+            }
+        }
+
+        function doGeneration() {
+            if (!isRunning) return
+
+            generation++
+            document.getElementById("generationCount").textContent = "Generation " + generation
+
+            var newBoard = []
+            for (var y = 0; y < height; y++) {
+                var row = []
+                newBoard.push(row)
+                for (var x = 0; x < width; x++) {
+                    //For each cell, tally up the number of live neighbors.
+                    neighbors = 0;
+                    for (var neighX = -1; neighX <= 1; neighX++) {
+                        if (isCellSet(neighX + x, y - 1)) neighbors++
+                        if (isCellSet(neighX + x, y + 1)) neighbors++
+                    }
+                    if (isCellSet(x - 1, y)) neighbors++
+                    if (isCellSet(x + 1, y)) neighbors++
+
+                    /*Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+                    Any live cell with two or three live neighbours lives on to the next generation.
+                    Any live cell with more than three live neighbours dies, as if by overpopulation.
+                    Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.*/
+                    if (isCellSet(x,y)) {
+                        if (neighbors < 2) {
+                            row.push(false)
+                        }
+
+                        if (neighbors == 2 || neighbors == 3) {
+                            row.push(true)
+                        }
+
+                        if (neighbors > 3) {
+                            row.push(false)
+                        }
+                    } else {
+                        if (neighbors == 3) {
+                            row.push(true)
+                        } else {
+                            row.push(false)
+                        }
+                    }
+                }
+            }
+
+            for (var y = 0; y < height; y++) {
+                for (var x = 0; x < width; x++) {
+                    setCell(x, y, newBoard[y][x])
+                }
+            }
+
+            if (isRunning) {
+                setTimeout(doGeneration, 500)
+            }
+        }
+
+        //childConstructor takes a single integer parameter--the index of the child element
+        //to be created. It is up to the caller whether this is significant.
+        function padOrTruncate(node, childConstructor, length) {
+            if (node.childElementCount > length) {
+                for (var i = node.childElementCount - 1; i >= length; i--) {
+                    node.children[i].remove()
+                }
+            }
+
+            if (node.childElementCount < length) {
+                for (var i = node.childElementCount; i < length; i++) {
+                    node.appendChild(childConstructor(i))
+                }
+            }
+        }
+
+        function onCellClicked(x, y) {
+            setCell(x, y, !isCellSet(x,y))
+        }
+
+        function isCellSet(x, y) {
+            if (x < 0 || x > width - 1) return false
+            if (y < 0 || y > height - 1) return false
+            return getCellElement(x,y).className.split(" ").indexOf("set") != -1
+        }
+
+        function setCell(x, y, value) {
+            var element = getCellElement(x,y)
+            var className = element.className.split(" ")
+            className = className.filter(e => e != "set" && e != "unset")
+            className.push(value ? "set" : "unset")
+            element.className = className.join(" ")
+        }
+
+        function getCellElement(x, y) {
+            return cellContainer.children[y].children[x]
+        }
+
+        function onDimensionsChanged() {
+            width = parseInt(txtWidth.value, 10)
+            height = parseInt(txtHeight.value, 10)
+
+            if (!Number.isInteger(width) || !Number.isInteger(height)) {
+                btnStartStop.disabled = true
+                btnStartStop.textContent = "Set valid board size first!"
+                return
+            }
+
+            //Resize the existing board, if one exists--don't destroy the entirety of the board the user created.
+            padOrTruncate(cellContainer, function (newIdx) { return document.createElement("tr") }, height)
+
+            Array.from(cellContainer.children).forEach((row, rowIndex) => {
+                padOrTruncate(row, newColumnIndex => { 
+                    var e = document.createElement("td")
+                    e.onclick = () => onCellClicked(newColumnIndex, rowIndex)
+                    e.className = "unset"
+                    return e
+                    }, width)
+            });
+            btnStartStop.disabled = false
+            btnStartStop.textContent = "Start"
+        }
+    </script>
+</body>
+
+</html>
