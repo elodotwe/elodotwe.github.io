@@ -64,7 +64,7 @@
 
         function onStartStopClicked() {
             isRunning = !isRunning
-            
+
             btnStartStop.textContent = isRunning ? "Stop" : "Start"
 
             txtWidth.disabled = isRunning
@@ -184,7 +184,7 @@
             padOrTruncate(cellContainer, function (newIdx) { return document.createElement("tr") }, height)
 
             Array.from(cellContainer.children).forEach((row, rowIndex) => {
-                padOrTruncate(row, newColumnIndex => { 
+                padOrTruncate(row, newColumnIndex => {
                     var e = document.createElement("td")
                     e.onclick = () => onCellClicked(newColumnIndex, rowIndex)
                     e.className = "unset"
@@ -195,6 +195,8 @@
             btnStartStop.textContent = "Start"
         }
     </script>
+
+    <p><a href="/">Back to home</a></p>
 </body>
 
 </html>
