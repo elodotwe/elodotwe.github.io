@@ -1,12 +1,24 @@
-html {
-    background-color: white;
+:root {
+    --text-color: black;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
+    :root {
+        --text-color: white;
+    }
+} */
+
+html {
+    background-color: white;
+    color: var(--text-color);
+}
+
+/* @media (prefers-color-scheme: dark) {
     html {
         background-color: black;
+        color: white;
     }
-}
+} */
 
 body {
     max-width: 1024px;
@@ -46,7 +58,7 @@ h2 {
     height: 100%;
     padding: 0.2em;
     box-sizing: border-box;
-    color: black;
+    color: var(--text-color);
 }
 
 .recents h3 {
