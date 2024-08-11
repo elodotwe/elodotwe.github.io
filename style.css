@@ -1,24 +1,45 @@
 :root {
-    --text-color: black;
+    --body-text: black;
+    --body-background: white;
+
+    --h1-text: black;
+    --h1-background: rgb(119, 119, 119);
+
+    --h2-text: black;
+    --h2-background: rgb(182, 182, 182);
+
+    --primary-background-dark: rgb(199, 80, 0);
+
+    --primary-text: black;
+    --primary-background: rgb(255, 102, 0);
+
+    --primary-background-highlight: rgb(255, 145, 71);
 }
 
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     :root {
-        --text-color: white;
+        --body-text: white;
+        --body-background: black;
+    
+        --h1-text: black;
+        --h1-background: rgb(58, 58, 58);
+    
+        --h2-text: black;
+        --h2-background: rgb(105, 105, 105);
+    
+        --primary-background-dark: rgb(97, 39, 0);
+    
+        --primary-text: black;
+        --primary-background: rgb(255, 102, 0);
+    
+        --primary-background-highlight: rgb(201, 80, 0);
     }
-} */
+}
 
 html {
-    background-color: white;
-    color: var(--text-color);
+    background-color: var(--body-background);
+    color: var(--body-text);
 }
-
-/* @media (prefers-color-scheme: dark) {
-    html {
-        background-color: black;
-        color: white;
-    }
-} */
 
 body {
     max-width: 1024px;
@@ -27,13 +48,15 @@ body {
 }
 
 h1 {
-    background-color: aquamarine;
+    background-color: var(--primary-background);
+    color: var(--h1-text);
     padding: 0.2em;
     margin: 0;
 }
 
 h2 {
-    background-color: rgb(182, 182, 182);
+    background-color: var(--h2-background);
+    color: var(--h2-text);
     padding: 0.2em;
     margin: 0;
 }
@@ -53,12 +76,16 @@ h2 {
 .recents a {
     text-decoration: none;
     border-radius: 0.2em;
-    background-color: deepskyblue;
     width: 100%;
     height: 100%;
     padding: 0.2em;
     box-sizing: border-box;
-    color: var(--text-color);
+    color: var(--primary-text);
+    background-color: var(--primary-background-highlight);
+}
+
+.recents a:hover {
+    background-color:var(--primary-background);
 }
 
 .recents h3 {
