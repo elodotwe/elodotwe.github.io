@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Physics Toy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-scroll">
+                <div class="header">
+                    <h1>Physics Toy</h1>
+                    <div class="mode-buttons">
+                        <button id="editBtn" class="mode-btn active">Edit</button>
+                        <button id="runBtn" class="mode-btn">Run</button>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="addObjectBtn" class="control-btn">+ Add Object</button>
+                    <button id="randomizeBtn" class="control-btn">Randomize All</button>
+                    <button id="removeSelectedBtn" class="control-btn danger">Remove Selected</button>
+                    <button id="clearAllBtn" class="control-btn danger">Clear All</button>
+                    <button id="pauseBtn" class="control-btn" style="display: none; background: #ff9800;">Pause</button>
+                </div>
+
+                <div class="properties-panel">
+                    <h3>Object Properties</h3>
+                    <div id="propertiesContent" class="properties-content">
+                        <p class="placeholder">Select object(s) to edit</p>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <h3>Stats</h3>
+                    <p>Objects: <span id="objectCount">0</span></p>
+                    <p>Selected: <span id="selectedCount">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
